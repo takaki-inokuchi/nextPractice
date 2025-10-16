@@ -34,7 +34,7 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
             {article.content.length > 70
               ? article.content.substring(0, 70)
               : article.content}{" "}
-            + ...
+            ...
           </Link>
           <Link
             href={`articles/${article.id}`}
