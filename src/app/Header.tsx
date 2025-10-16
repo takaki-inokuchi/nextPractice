@@ -6,7 +6,7 @@ export const Header = () => {
     <header className="py-5 px-10 border-b flex justify-between items-center">
       <div>
         <h1 className="text2xl font-extrabold">
-          <Link href="">Next13</Link>
+          <Link href="/">Next13</Link>
         </h1>
       </div>
       <div>
