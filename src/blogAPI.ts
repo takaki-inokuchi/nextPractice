@@ -1,36 +1,28 @@
 import { notFound } from "next/navigation";
 import { Article } from "./types";
+import { supabase } from "./utils/supabaseClient";
 
 export const getAllArticles = async (): Promise<Article[]> => {
-  const res = await fetch("http://localhost:3001/posts", { cache: "no-store" });
+  const { data, error } = await supabase
+    .from("posts1")
+    .select("*")
+    .order("created_At", { ascending: false });
 
-  if (!res.ok) {
-    throw new Error("エラー発生");
-  }
-
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  const articles = await res.json();
-  return articles;
+  if (error) throw new Error(error.message);
+  return data || [];
 };
 
 export const getDetailArticle = async (id: string): Promise<Article> => {
-  const res = await fetch(`http://localhost:3001/posts/${id}`, {
-    next: { revalidate: 60 },
-  });
+  const { data, error } = await supabase
+    .from("posts1")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-  if (res.status === 404) {
-    notFound();
-  }
+  if (error) throw new Error(error.message);
+  if (!data) notFound();
 
-  if (!res.ok) {
-    throw new Error("エラー発生");
-  }
-
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const article = await res.json();
-  return article;
+  return data;
 };
 
 export const createArticle = async (
@@ -39,38 +31,24 @@ export const createArticle = async (
   content: string
 ): Promise<Article> => {
   const currentDatetime = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("posts1")
+    .insert([{ id, title, content, created_At: currentDatetime }])
+    .select()
+    .single();
 
-  const res = await fetch(`http://localhost:3001/posts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id, title, content, createdAt: currentDatetime }),
-  });
-
-  if (!res.ok) {
-    throw new Error("エラー発生");
-  }
-
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const newArticle = await res.json();
-  return newArticle;
+  if (error) throw new Error(error.message);
+  return data;
 };
 
 export const deleteArticle = async (id: string): Promise<Article> => {
+  const { data, error } = await supabase
+    .from("posts1")
+    .delete()
+    .eq("id", id)
+    .select()
+    .single();
 
-  const res = await fetch(`http://localhost:3001/posts/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    console.error("DELETE 失敗:", res.status, res.statusText);
-    throw new Error("エラー発生");
-  }
-
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const deleteArticle = await res.json();
-  return deleteArticle;
+  if (error) throw new Error(error.message);
+  return data;
 };

@@ -3,10 +3,7 @@ import { getDetailArticle } from "@/blogAPI";
 import Image from "next/image";
 
 const Article = async ({ params }: { params: { id: string } }) => {
-  const { id } = params;
-  const detailArticle = await getDetailArticle(id);
-  console.log("detailArticle:", detailArticle);
-  console.log("detailArticle.id:", detailArticle.id);
+  const detailArticle = await getDetailArticle(params.id);
 
   return (
     <div className="max-w-3xl mx-auto p-5">
@@ -16,12 +13,8 @@ const Article = async ({ params }: { params: { id: string } }) => {
         width={660}
         height={400}
       />
-      <h1 className="text-center text-4xl mb-10 mt-10">
-        {detailArticle.title}
-      </h1>
-      <div className="text-lg leading-relaxed text-justify">
-        {detailArticle.content}
-      </div>
+      <h1 className="text-center text-4xl mb-10 mt-10">{detailArticle.title}</h1>
+      <div className="text-lg leading-relaxed text-justify">{detailArticle.content}</div>
       <div className="text-right mt-5">
         <DeleteButton id={detailArticle.id} />
       </div>
